@@ -1,0 +1,10 @@
+# This is a template for the principals.properties file required
+# for unit test execution.
+
+# The format of each entry is username=principalID:listOfAttributes
+# where listOfAttributes is either a single attribute value or a pipe-
+# delimited list of values.
+# Map items are separated by semicolons since commas commonly occur in
+# LDAP attribute values.
+Bob=bob:{mail:bob@example.com;memberOf:admins|users}
+Janice=janice:{mail:janice@example.com;memberOf:users|hr}

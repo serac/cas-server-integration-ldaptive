@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+  <!--
+    Extra configuration that may be needed for particular directory environments.
+  -->
+
+  <bean id="authnConnectionConfig" parent="baseConnectionConfig" />
+
+  <bean id="resolverConnectionConfig" parent="baseConnectionConfig"
+        p:sslConfig-ref="resolverSslConfig"
+        p:bindSaslConfig-ref="resolverSaslConfig" />
+
+  <bean id="resolverSslConfig" class="org.ldaptive.ssl.SslConfig">
+    <property name="credentialConfig">
+      <bean class="org.ldaptive.ssl.KeyStoreCredentialConfig"
+            p:keyStore="file:/path/to/keystore"
+            p:keyStoreType="JKS"
+            p:keyStorePassword="changeit" />
+    </property>
+  </bean>
+
+  <bean id="resolverSaslConfig" class="org.ldaptive.sasl.SaslConfig"
+        p:mechanism="EXTERNAL" />
+
+  <util:list id="resolverAttributeList">
+    <value>uid</value>
+    <value>eduPersonAffiliation</value>
+    <value>member</value>
+  </util:list>
+
+  <util:map id="resolverAttributeMapping">
+    <entry key="eduPersonAffiliation" value="ePA" />
+  </util:map>
+</beans>
