@@ -219,6 +219,9 @@ public class LdapCredentialsToPrincipalResolver implements CredentialsToPrincipa
      * @return  Search filter with parameters applied.
      */
     private SearchFilter filterWithParams(final Credentials credentials) {
+        if (!(credentials instanceof UsernamePasswordCredentials)) {
+            throw new IllegalArgumentException(credentials + " not supported.");
+        }
         final SearchFilter filter = new SearchFilter();
         filter.setFilter(searchExecutor.getSearchFilter().getFilter());
         filter.setParameter(USER_PARAM, ((UsernamePasswordCredentials) credentials).getUsername());
