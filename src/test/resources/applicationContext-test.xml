@@ -32,6 +32,14 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
         p:prunePeriod="${ldap.pool.prunePeriod}"
         p:expirationTime="${ldap.pool.expirationTime}" />
 
+  <bean id="poolValidator" class="org.ldaptive.pool.SearchValidator" />
+
+  <bean id="baseConnectionPool" class="org.ldaptive.pool.BlockingConnectionPool" abstract="true"
+        init-method="initialize"
+        p:poolConfig-ref="ldapPoolConfig"
+        p:blockWaitTime="${ldap.pool.blockWaitTime}"
+        p:validator-ref="poolValidator" />
+
   <!--
   ================================================
   LDAP authentication beans
@@ -40,10 +48,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
   <bean id="authnConnectionFactory" class="org.ldaptive.DefaultConnectionFactory"
         p:connectionConfig-ref="authnConnectionConfig" />
 
-  <bean id="authnConnectionPool" class="org.ldaptive.pool.BlockingConnectionPool"
-        p:blockWaitTime="${ldap.pool.blockWaitTime}"
-        p:connectionFactory-ref="authnConnectionFactory"
-        p:poolConfig-ref="ldapPoolConfig" />
+  <bean id="authnConnectionPool" parent="baseConnectionPool"
+        p:connectionFactory-ref="authnConnectionFactory" />
 
   <bean id="authnPooledLdapConnectionFactory" class="org.ldaptive.pool.PooledConnectionFactory"
         p:connectionPool-ref="authnConnectionPool" />
@@ -78,10 +84,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
   <bean id="resolverConnectionFactory" class="org.ldaptive.DefaultConnectionFactory"
         p:connectionConfig-ref="resolverConnectionConfig" />
 
-  <bean id="resolverConnectionPool" class="org.ldaptive.pool.BlockingConnectionPool"
-        p:blockWaitTime="${ldap.pool.blockWaitTime}"
-        p:connectionFactory-ref="resolverConnectionFactory"
-        p:poolConfig-ref="ldapPoolConfig" />
+  <bean id="resolverConnectionPool" parent="baseConnectionPool"
+        p:connectionFactory-ref="resolverConnectionFactory" />
 
   <bean id="resolverPooledLdapConnectionFactory" class="org.ldaptive.pool.PooledConnectionFactory"
         p:connectionPool-ref="resolverConnectionPool" />
