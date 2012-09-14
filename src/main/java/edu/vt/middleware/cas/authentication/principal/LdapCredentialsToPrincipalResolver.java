@@ -63,15 +63,15 @@ public class LdapCredentialsToPrincipalResolver implements CredentialsToPrincipa
 
     /** Attribute that will be used for identifier in resolved principal. */
     @NotNull
-    private String userNameAttribute;
+    private final String userNameAttribute;
 
     /** Performs the LDAP search operation. */
     @NotNull
-    private SearchExecutor searchExecutor;
+    private final SearchExecutor searchExecutor;
 
     /** Source of LDAP connections. */
     @NotNull
-    private ConnectionFactory connectionFactory;
+    private final ConnectionFactory connectionFactory;
 
 
     /**

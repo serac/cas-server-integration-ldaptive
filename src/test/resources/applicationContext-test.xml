@@ -3,9 +3,11 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
 
   <import resource="file:extraConfigContext.xml" />
@@ -17,6 +19,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
   <bean id="testPrincipals" class="org.springframework.beans.factory.config.PropertiesFactoryBean"
         p:location="file:principals.properties" />
+
+  <bean id="testUserDetails" class="org.springframework.beans.factory.config.PropertiesFactoryBean"
+        p:location="file:userdetails.properties" />
 
   <bean id="baseConnectionConfig" class="org.ldaptive.ConnectionConfig" abstract="true"
         p:ldapUrl="${ldap.url}"
@@ -32,18 +37,19 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
         p:prunePeriod="${ldap.pool.prunePeriod}"
         p:expirationTime="${ldap.pool.expirationTime}" />
 
-  <bean id="poolValidator" class="org.ldaptive.pool.SearchValidator" />
+  <bean id="searchValidator" class="org.ldaptive.pool.SearchValidator" />
 
   <bean id="baseConnectionPool" class="org.ldaptive.pool.BlockingConnectionPool" abstract="true"
         init-method="initialize"
         p:poolConfig-ref="ldapPoolConfig"
         p:blockWaitTime="${ldap.pool.blockWaitTime}"
-        p:validator-ref="poolValidator" />
+        p:validator-ref="searchValidator" />
+
 
   <!--
-  ================================================
-  LDAP authentication beans
-  ================================================
+    ================================================
+    LDAP authentication beans
+    ================================================
   -->
   <bean id="authnConnectionFactory" class="org.ldaptive.DefaultConnectionFactory"
         p:connectionConfig-ref="authnConnectionConfig" />
@@ -76,10 +82,11 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
     <constructor-arg ref="authenticator" />
   </bean>
 
+
   <!--
-  ================================================
-  LDAP principal resolution beans
-  ================================================
+    ================================================
+    LDAP principal resolution beans
+    ================================================
   -->
   <bean id="resolverConnectionFactory" class="org.ldaptive.DefaultConnectionFactory"
         p:connectionConfig-ref="resolverConnectionConfig" />
@@ -108,5 +115,72 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
     <!-- LDAP attribute to be used for principal ID. -->
     <constructor-arg value="${ldap.resolver.userAttribute}" />
   </bean>
+
+
+  <!--
+    ================================================
+    Monitors
+    ================================================
+  -->
+  <bean class="edu.vt.middleware.cas.monitor.ConnectionFactoryMonitor">
+    <constructor-arg ref="authnConnectionFactory" />
+    <constructor-arg ref="searchValidator" />
+  </bean>
+
+  <bean class="edu.vt.middleware.cas.monitor.PooledConnectionFactoryMonitor"
+      p:executor-ref="poolMonitorValidator"
+      p:maxWait="5000">
+    <constructor-arg ref="authnPooledLdapConnectionFactory" />
+    <constructor-arg ref="searchValidator" />
+  </bean>
+
+  <bean id="poolMonitorValidator"
+        class="org.springframework.scheduling.concurrent.ThreadPoolExecutorFactoryBean"
+        p:corePoolSize="1"
+        p:maxPoolSize="1"
+        p:keepAliveSeconds="5" />
+
+
+  <!--
+    ================================================
+    User details
+    ================================================
+  -->
+  <bean id="ldapUserDetailsService" class="edu.vt.middleware.cas.userdetails.LdapUserDetailsService">
+    <!-- Source of LDAP connections for search operation. -->
+    <constructor-arg ref="resolverPooledLdapConnectionFactory" />
+
+    <!-- Component that performs the LDAP search operation for user data. -->
+    <constructor-arg>
+      <bean class="org.ldaptive.SearchExecutor"
+            p:baseDn="${ldap.userdetails.user.baseDn}"
+            p:searchFilter="${ldap.userdetails.user.searchFilter}"
+            p:returnAttributes-ref="userDetailsUserAttributes"
+          />
+    </constructor-arg>
+
+    <!-- Component that performs the LDAP search operation for role data. -->
+    <constructor-arg>
+      <bean class="org.ldaptive.SearchExecutor"
+            p:baseDn="${ldap.userdetails.role.baseDn}"
+            p:searchFilter="${ldap.userdetails.role.searchFilter}"
+            p:returnAttributes-ref="userDetailsRoleAttributes"
+          />
+    </constructor-arg>
+
+    <!-- LDAP attribute to be used for user details username. -->
+    <constructor-arg value="${ldap.userdetails.user.attribute}" />
+
+    <!-- LDAP attribute to be used as basis for granted authority role name. -->
+    <constructor-arg value="${ldap.userdetails.role.attribute}" />
+  </bean>
+
+  <util:list id="userDetailsUserAttributes">
+    <value>${ldap.userdetails.user.attribute}</value>
+  </util:list>
+
+  <util:list id="userDetailsRoleAttributes">
+    <value>${ldap.userdetails.role.attribute}</value>
+  </util:list>
 
 </beans>

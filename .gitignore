@@ -1,3 +1,5 @@
 *.properties
+*.iml
 extraConfigContext.xml
+.idea
 target

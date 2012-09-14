@@ -12,6 +12,7 @@ ldap.connectTimeout=3000
 # Whether to use StartTLS (probably needed if not SSL connection)
 ldap.useStartTLS=true
 
+
 #========================================
 # LDAP connection pool configuration
 #========================================
@@ -49,4 +50,15 @@ ldap.authn.searchFilter=uid={user}
 ldap.resolver.baseDn=ou=people,dc=ldaptive,dc=org
 ldap.resolver.searchFilter=uid={user}
 ldap.resolver.userAttribute=uid
+
+
+#========================================
+# User details properties
+#========================================
+ldap.userdetails.user.baseDn=ou=people,dc=ldaptive,dc=org
+ldap.userdetails.role.baseDn=ou=groups,dc=ldaptive,dc=org
+ldap.userdetails.user.searchFilter=uid={user}
+ldap.userdetails.role.searchFilter=member={user}
+ldap.userdetails.user.attribute=uid
+ldap.userdetails.role.attribute=ou
 
