@@ -3,12 +3,15 @@
 ## Introduction
 
 The cas-server-integration-ldaptive library is an extension for Jasig CAS that provides LDAP integration using the
-[ldaptive](http://www.ldaptive.org/) LDAP library for Java.  Only the essential features of CAS LDAP support are
+[ldaptive](http://www.ldaptive.org/) LDAP library for Java. The following CAS integration components are provided:
 provided at present:
 
 * LdapAuthenticationHandler - provides capabilities found in both FastBindAuthenticationHandler and
   BindAuthenticationHandler components.
 * LdapCredentialsToPrincipalResolver - resolves principals via LDAP search.
+* LdapUserDetailsService - Spring Security user details implementation.
+* ConnectionFactoryMonitor - LDAP single connection monitor.
+* PooledConnectionFactoryMonitor - LDAP connection pool monitor.
 
 ## Dependencies
 
