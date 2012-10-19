@@ -30,11 +30,11 @@ ldap.pool.blockWaitTime=3000
 ldap.pool.validatePeriod=300
 
 # Attempt to prune connections every N seconds
-ldap.pool.prunePeriod=600
+ldap.pool.prunePeriod=300
 
-# When above pool min a connection is liable to be pruned if
-# it is older than the given value in seconds
-ldap.pool.expirationTime=3600
+# Maximum amount of time an idle connection is allowed to be in
+# pool before it is liable to be removed/destroyed
+ldap.pool.idleTime=600
 
 
 #========================================

@@ -33,9 +33,11 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
         p:maxPoolSize="${ldap.pool.maxSize}"
         p:validateOnCheckOut="${ldap.pool.validateOnCheckout}"
         p:validatePeriodically="${ldap.pool.validatePeriodically}"
-        p:validatePeriod="${ldap.pool.validatePeriod}"
+        p:validatePeriod="${ldap.pool.validatePeriod}" />
+
+  <bean id="pruneStrategy" class="org.ldaptive.pool.IdlePruneStrategy"
         p:prunePeriod="${ldap.pool.prunePeriod}"
-        p:expirationTime="${ldap.pool.expirationTime}" />
+        p:idleTime="${ldap.pool.idleTime}" />
 
   <bean id="searchValidator" class="org.ldaptive.pool.SearchValidator" />
 
@@ -43,7 +45,8 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
         init-method="initialize"
         p:poolConfig-ref="ldapPoolConfig"
         p:blockWaitTime="${ldap.pool.blockWaitTime}"
-        p:validator-ref="searchValidator" />
+        p:validator-ref="searchValidator"
+        p:pruneStrategy-ref="pruneStrategy"/>
 
 
   <!--
