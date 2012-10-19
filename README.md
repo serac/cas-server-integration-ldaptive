@@ -15,9 +15,8 @@ provided at present:
 
 ## Dependencies
 
-* CAS 3.5.0
-* ldaptive 1.0-SNAPSHOT
-* slf4j
+This project requires CAS 3.5.0 or later, latest ldaptive snapshot, Spring Security and slf4j.
+See the pom.xml for detailed dependency information.
 
 ## Building
 
