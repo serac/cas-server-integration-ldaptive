@@ -49,7 +49,12 @@ public class PooledConnectionFactoryMonitor extends AbstractPoolMonitor {
 
     @Override
     protected StatusCode checkPool() throws Exception {
-        return validator.validate(connectionFactory.getConnection()) ? StatusCode.OK : StatusCode.ERROR;
+        final Connection conn = connectionFactory.getConnection();
+        try {
+            return validator.validate(conn) ? StatusCode.OK : StatusCode.ERROR;
+        } finally {
+            conn.close();
+        }
     }
 
     @Override
