@@ -18,7 +18,7 @@ import java.security.GeneralSecurityException;
 import javax.validation.constraints.NotNull;
 
 import org.jasig.cas.authentication.handler.AuthenticationException;
-import org.jasig.cas.authentication.handler.BadUsernameOrPasswordAuthenticationException;
+import org.jasig.cas.authentication.handler.BadCredentialsAuthenticationException;
 import org.jasig.cas.authentication.handler.support.AbstractUsernamePasswordAuthenticationHandler;
 import org.jasig.cas.authentication.principal.UsernamePasswordCredentials;
 import org.ldaptive.Credential;
@@ -80,6 +80,6 @@ public class LdapAuthenticationHandler extends AbstractUsernamePasswordAuthentic
                 throw new WrappedGeneralSecurityException(e);
             }
         }
-        throw new BadUsernameOrPasswordAuthenticationException();
+        throw BadCredentialsAuthenticationException.ERROR;
     }
 }
